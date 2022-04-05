@@ -512,8 +512,18 @@
         cspBuffer: {
             CSP_ATTRIB: 'data-csp-01928735', // a randomly named temporary attribute to store the CSP elem id
             domElementsStyles: {},
+            wrapStash: function(htmlString) {
+                // Wrap <tr> elements in a <tbody> so the various table elements
+                // do not get stripped out automatically by the browser.
+                if (htmlString.indexOf('<tr') === 0) {
+                    return '<tbody>' + htmlString + '</tbody>';
+                }
+                else {
+                    return '<div>' + htmlString + '</div>';
+                }
+            },
             stash: function (htmlString) {
-                var self = this, outerDom = $.parseHTML('<div>' + htmlString + '</div>'), $el = $(outerDom);
+                var self = this, outerDom = $.parseHTML(self.wrapStash(htmlString)), $el = $(outerDom);
                 $el.find('[style]').each(function (key, elem) {
                     var $elem = $(elem), styleDeclaration = $elem[0].style, id = $h.uniqId(), styles = {};
                     if (styleDeclaration && styleDeclaration.length) {
